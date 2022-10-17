@@ -1,19 +1,12 @@
 import mysql from 'mysql';
 import util from 'util';
-
-// Database structure:
-// Table: products
-// Columns: id, name, price, description, image (url), category (id of category)
-// Table: categories
-// Columns: id, name, parent (id of parent category)
-// Table: clients
-// Columns: id, cart (JSON)
+import '../../../env';
 
 export const dbConnection = mysql.createConnection({
-	host: '45.84.206.101',
-	user: 'u555359388_test_shop',
-	password: '1qaz@WSX',
-	database: 'u555359388_test_shop',
+	host: process.env.DB_HOST,
+	user: process.env.DB_USER,
+	password: process.env.DB_PASSWORD,
+	database: process.env.DB_NAME,
 	connectTimeout: 0
 });
 
