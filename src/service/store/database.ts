@@ -10,10 +10,11 @@ import util from 'util';
 // Columns: id, cart (JSON)
 
 export const dbConnection = mysql.createConnection({
-	host: 'localhost',
-	user: 'root',
-	password: '',
-	database: 'tg-bot-shop'
+	host: '45.84.206.101',
+	user: 'u555359388_test_shop',
+	password: '1qaz@WSX',
+	database: 'u555359388_test_shop',
+	connectTimeout: 0
 });
 
 //some magic to make async/await work with mysql
