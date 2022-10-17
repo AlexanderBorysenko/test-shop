@@ -8,6 +8,7 @@ export class Router {
 	private messageRoutes = new Map();
 	private callbackQueryRoutes = new Map();
 	private bot: TelegramBot;
+	public pauseListening: boolean = false;
 
 	constructor(bot: TelegramBot) {
 		this.bot = bot;
@@ -33,13 +34,13 @@ export class Router {
 
 	listenMessages() {
 		this.bot.on('message', msg => {
-			this.handleMessage(msg);
+			if (!this.pauseListening) this.handleMessage(msg);
 		});
 	}
 
 	listenCallbackQuery() {
 		this.bot.on('callback_query', msg => {
-			this.handleCallbackQuery(msg);
+			if (!this.pauseListening) this.handleCallbackQuery(msg);
 		});
 	}
 }

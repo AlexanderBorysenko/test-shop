@@ -30,10 +30,12 @@ export class Client {
 		}
 	}
 
-	async updateClientCart(chatId: number, cart: string) {
+	async updateClientCart(chatId: number, cart: ICart) {
 		try {
 			await this.dbQuery(
-				`UPDATE clients SET cart = '${cart}' WHERE chat_id = ${chatId}`
+				`UPDATE clients SET cart = '${JSON.stringify(
+					cart
+				)}' WHERE chat_id = ${chatId}`
 			);
 		} catch (err) {
 			console.log(err);
@@ -66,7 +68,7 @@ export class Client {
 				cart[productIndex].count++;
 			}
 
-			await this.updateClientCart(chatId, JSON.stringify(cart));
+			await this.updateClientCart(chatId, cart);
 		} catch (err) {
 			console.log(err);
 		}
@@ -81,10 +83,8 @@ export class Client {
 
 			await this.updateClientCart(
 				chatId,
-				JSON.stringify(
-					cart.filter(
-						(product: { id: number }) => product.id !== productId
-					)
+				cart.filter(
+					(product: { id: number }) => product.id !== productId
 				)
 			);
 		} catch (err) {
@@ -96,10 +96,22 @@ export class Client {
 		try {
 			const client = await this.getClientByChatId(chatId);
 			if (!client) return [];
-			return JSON.parse(client.cart);
+			const cart: ICart = JSON.parse(client.cart);
+			return cart;
 		} catch (err) {
 			console.log(err);
 			return [];
+		}
+	}
+
+	async getClientCartProduct(chatId: number, productId: number) {
+		try {
+			const clientCart = await this.getClientCart(chatId);
+			if (!clientCart) return null;
+			return clientCart.find(product => product.id === productId);
+		} catch (err) {
+			console.log(err);
+			return null;
 		}
 	}
 }

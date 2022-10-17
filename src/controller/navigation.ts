@@ -9,6 +9,7 @@ export class NavigationController {
 			`Вітаємо y нашому магазині, ${msg.chat.first_name}`,
 			{
 				reply_markup: {
+					resize_keyboard: true,
 					keyboard: [
 						[
 							{
@@ -19,6 +20,11 @@ export class NavigationController {
 							{
 								text: 'Кошик'
 							}
+						],
+						[
+							{
+								text: 'Мої Замовлення'
+							}
 						]
 					]
 				}
@@ -26,9 +32,10 @@ export class NavigationController {
 		);
 	}
 
-	async goHome(chatId: number) {
-		await this.bot.sendMessage(chatId, 'Ви на головный сторінці', {
+	async homeNavigation(chatId: number, text = 'Ви на головный сторінці') {
+		await this.bot.sendMessage(chatId, text, {
 			reply_markup: {
+				resize_keyboard: true,
 				keyboard: [
 					[
 						{
@@ -45,9 +52,10 @@ export class NavigationController {
 		});
 	}
 
-	async goProducts(chatId: number) {
-		await this.bot.sendMessage(chatId, 'Перегляд товарів', {
+	async productsNavigation(chatId: number, text = 'Перегляд Товарів') {
+		await this.bot.sendMessage(chatId, text, {
 			reply_markup: {
+				resize_keyboard: true,
 				keyboard: [
 					[
 						{
@@ -64,9 +72,10 @@ export class NavigationController {
 		});
 	}
 
-	async goCart(chatId: number) {
-		await this.bot.sendMessage(chatId, 'Ваш Кошик:', {
+	async cartNavigation(chatId: number, text = 'Кошик:') {
+		await this.bot.sendMessage(chatId, text, {
 			reply_markup: {
+				resize_keyboard: true,
 				keyboard: [
 					[
 						{
@@ -75,6 +84,11 @@ export class NavigationController {
 					],
 					[
 						{
+							text: 'Мої Замовлення'
+						}
+					],
+					[
+						{
 							text: 'Головне Меню'
 						}
 					]
@@ -83,13 +97,57 @@ export class NavigationController {
 		});
 	}
 
-	async goToCheckout(chatId: number) {
-		await this.bot.sendMessage(chatId, 'Ваш Кошик:', {
+	async checkoutNavigation(chatId: number, text = 'Оформлення Замовлення:') {
+		await this.bot.sendMessage(chatId, text, {
 			reply_markup: {
+				resize_keyboard: true,
 				keyboard: [
 					[
 						{
+							text: 'Підтвердити Замовлення'
+						}
+					],
+					[
+						{
 							text: 'Кошик'
+						}
+					],
+					[
+						{
+							text: 'Головне Меню'
+						}
+					]
+				]
+			}
+		});
+	}
+
+	async clientOrdersNavigation(chatId: number, text = 'Ваші Замовлення:') {
+		await this.bot.sendMessage(chatId, text, {
+			reply_markup: {
+				resize_keyboard: true,
+				keyboard: [
+					[
+						{
+							text: 'Головне Меню'
+						}
+					]
+				]
+			}
+		});
+	}
+
+	async afterCheckoutNavigation(
+		chatId: number,
+		text = "Ваше Замовлення прийнято, скоро ми з вами з'яжемось!"
+	) {
+		await this.bot.sendMessage(chatId, text, {
+			reply_markup: {
+				resize_keyboard: true,
+				keyboard: [
+					[
+						{
+							text: 'Мої Замовлення'
 						}
 					],
 					[

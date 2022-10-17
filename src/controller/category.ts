@@ -105,7 +105,7 @@ export class CategoryController {
 		if (category.parent !== 0) {
 			await this.listCategoriesByParentId(chatId, category.parent);
 		} else {
-			await this.bot.controller.navigation.goHome(chatId);
+			await this.bot.controller.navigation.homeNavigation(chatId);
 		}
 	}
 }

@@ -11,6 +11,7 @@ const start = async () => {
 	bot.store = storeInit(bot);
 	bot.controller = controllerInit(bot);
 	bot.router = new Router(bot);
+	bot.ordersBuffer = new Map();
 
 	bot.router.addMessageRoute(
 		'/start',
@@ -19,16 +20,16 @@ const start = async () => {
 
 	bot.router.addMessageRoute(
 		'Головне Меню',
-		async msg => await bot.controller.navigation.goHome(msg.chat.id)
+		async msg => await bot.controller.navigation.homeNavigation(msg.chat.id)
 	);
 
 	bot.router.addMessageRoute('Кошик', async msg => {
-		await bot.controller.navigation.goCart(msg.chat.id);
+		await bot.controller.navigation.cartNavigation(msg.chat.id);
 		await bot.controller.cart.listCart(msg.chat.id);
 	});
 
 	bot.router.addMessageRoute('Перегляд Товарів', async msg => {
-		await bot.controller.navigation.goProducts(msg.chat.id);
+		await bot.controller.navigation.productsNavigation(msg.chat.id);
 		await bot.controller.categories.listCategoriesByParentId(
 			msg.chat.id,
 			0
@@ -36,7 +37,12 @@ const start = async () => {
 	});
 
 	bot.router.addMessageRoute('Оформити Замовлення', async msg => {
-		await bot.controller.checkout.getClientData(msg.chat.id);
+		await bot.controller.checkout.checkout(msg.chat.id);
+	});
+
+	bot.router.addMessageRoute('Мої Замовлення', async msg => {
+		await bot.controller.navigation.homeNavigation(msg.chat.id);
+		await bot.controller.checkout.listAllClientOrders(msg.chat.id);
 	});
 
 	bot.router.listenMessages();
@@ -56,13 +62,37 @@ const start = async () => {
 
 	bot.router.addCallbackQueryRoute('/remove_from_cart', async msg => {
 		const productId = +msg.data.split(' ')[1];
-		await bot.store.client.removeProductFromCart(
-			msg.message.chat.id,
-			productId
-		);
-		await bot.sendMessage(msg.message.chat.id, `Товар видалено з кошика`);
+		const messageId = msg.data.split(' ')[2];
+		productId &&
+			(await bot.store.client.removeProductFromCart(
+				msg.message.chat.id,
+				productId
+			));
+		messageId && (await bot.deleteMessage(msg.message.chat.id, messageId));
 	});
 
+	bot.router.addCallbackQueryRoute('/confirm_order', async msg => {
+		const orderData = bot.ordersBuffer.get(msg.message.chat.id);
+
+		if (orderData) {
+			await bot.store.checkout.createOrder(orderData);
+			await bot.store.client.updateClientCart(msg.message.chat.id, []);
+			await bot.controller.navigation.afterCheckoutNavigation(
+				msg.message.chat.id
+			);
+		} else {
+			await bot.sendMessage(
+				msg.message.chat.id,
+				`Сталася помилка, будь ласка спробуйте ще раз`
+			);
+			await bot.controller.navigation.cartNavigation(msg.message.chat.id);
+			await bot.controller.cart.listCart(msg.message.chat.id);
+		}
+	});
+	bot.router.addCallbackQueryRoute('/cancel_order', async msg => {
+		await bot.controller.navigation.cartNavigation(msg.message.chat.id);
+		await bot.controller.cart.listCart(msg.message.chat.id);
+	});
 	bot.router.listenCallbackQuery();
 };
 
