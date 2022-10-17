@@ -1,0 +1,13 @@
+{
+    "watch": [
+        "src"
+    ],
+    "ext": "ts,json",
+    "ignore": [
+        "src/**/*.spec.ts",
+        "src/test/**/*",
+        "coverage",
+        ".nyc_output"
+    ],
+    "exec": "ts-node src/index.ts"
+}
