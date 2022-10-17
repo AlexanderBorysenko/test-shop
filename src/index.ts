@@ -7,7 +7,9 @@ import { Router } from './routes/router';
 import { storeInit } from './service/store';
 
 const start = async () => {
-	const bot = new TelegramBot(process.env.TOKEN, { polling: true }) as Bot;
+	const bot = new TelegramBot(process.env.TOKEN, {
+		polling: true
+	}) as Bot;
 	bot.store = storeInit(bot);
 	bot.controller = controllerInit(bot);
 	bot.router = new Router(bot);
